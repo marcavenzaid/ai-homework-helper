@@ -1,0 +1,23 @@
+{
+    "CONFIG_PATH": "${ROOT_DIR}/config/config.json",
+    "BRAIN_CONFIG_PATH": "${ROOT_DIR}/config/brain_config.yaml",
+
+    "CONFIG_INIT_PROMPTS_PATH": "${ROOT_DIR}/config/init_prompts",
+
+    "INPUT_OUTPUT_PATH": "${ROOT_DIR}/output/input.txt",
+    "CHAT_COMPLETION_OUTPUT_PKL_PATH": "${ROOT_DIR}/output/chat_completion_output.pkl",
+    "CHAT_COMPLETION_MESSAGE_OUTPUT_PATH": "${ROOT_DIR}/output/chat_completion_message_output.txt",
+    "ASSISTANT_MESSAGES_OUTPUT_PKL_PATH": "${ROOT_DIR}/output/assistant_messages_output.pkl",
+    "ASSISTANT_RUN_STEPS_OUTPUT_PKL_PATH": "${ROOT_DIR}/output/assistant_run_steps_output.pkl",
+    "ASSISTANT_MESSAGES_IMAGE_OUTPUT_DIR": "${ROOT_DIR}/static/output/images/",
+    "MERGED_OUTPUT_CHAT_COMPLETION": "${ROOT_DIR}/output/merged_output_chat_completion.pkl",
+
+    "IMAGES_INPUT_OUTPUT_PATH": "${ROOT_DIR}/static/input/images/",
+    "IMAGES_OUTPUT_OUTPUT_PATH": "${ROOT_DIR}/static/output/images/",
+    "AUDIO_PATH": "${ROOT_DIR}/static/audio/",
+
+    "PREV_RESULT_BRAIN_USED_OUTPUT_PATH": "${ROOT_DIR}/output/prev_result_brain_used.txt",
+    "PREV_RESULT_HAS_IMAGES_OUTPUT_PATH": "${ROOT_DIR}/output/prev_result_has_images.txt",
+
+    "LOG_OUTPUT_PATH": "${ROOT_DIR}/logger/logger_output/app.log"
+}

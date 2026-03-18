@@ -1,0 +1,13 @@
+2024-07-12 09:14:38,630 - DEBUG    - [_config.py:78]_config.load_ssl_context - load_ssl_context verify=True cert=None trust_env=True http2=False
+2024-07-12 09:14:38,646 - DEBUG    - [_config.py:144]_config.load_ssl_context_verify - load_verify_locations cafile='D:\\Programming Projects\\AI Homework Helper\\venv\\Lib\\site-packages\\certifi\\cacert.pem'
+2024-07-12 09:14:38,691 - DEBUG    - [_base_client.py:446]_base_client._build_request - Request options: {'method': 'get', 'url': '/assistants/asst_42evwBmsjg2TzhWUFcb7omyn', 'headers': {'OpenAI-Beta': 'assistants=v2'}}
+2024-07-12 09:14:38,698 - DEBUG    - [_base_client.py:949]_base_client._request - Sending HTTP Request: GET https://api.openai.com/v1/assistants/asst_42evwBmsjg2TzhWUFcb7omyn
+2024-07-12 09:14:38,699 - DEBUG    - [_trace.py:45]_trace.trace - connect_tcp.started host='api.openai.com' port=443 local_address=None timeout=5.0 socket_options=None
+2024-07-12 09:14:38,917 - DEBUG    - [_trace.py:45]_trace.trace - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000025C0660A910>
+2024-07-12 09:14:38,918 - DEBUG    - [_trace.py:45]_trace.trace - start_tls.started ssl_context=<ssl.SSLContext object at 0x0000025C065E11C0> server_hostname='api.openai.com' timeout=5.0
+2024-07-12 09:14:39,098 - DEBUG    - [_trace.py:45]_trace.trace - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000025C06618CD0>
+2024-07-12 09:14:39,098 - DEBUG    - [_trace.py:45]_trace.trace - send_request_headers.started request=<Request [b'GET']>
+2024-07-12 09:14:39,099 - DEBUG    - [_trace.py:45]_trace.trace - send_request_headers.complete
+2024-07-12 09:14:39,099 - DEBUG    - [_trace.py:45]_trace.trace - send_request_body.started request=<Request [b'GET']>
+2024-07-12 09:14:39,099 - DEBUG    - [_trace.py:45]_trace.trace - send_request_body.complete
+2024-07-12 09:14:39,099 - DEBUG    - [_trace.py:45]_trace.trace - receive_response_headers.started request=<Request [b'GET']>

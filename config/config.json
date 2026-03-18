@@ -1,0 +1,11 @@
+{
+    "TUTOR_BRAIN_TO_USE_CONFIG_TAG_NAME": "tutor_brain_to_use",
+
+    "FILE_DELETER_AGE_IN_DAYS": 7,
+    "FILE_DELETER_MAX_FILES": 7,
+
+    "LOG_WHEN": "midnight",
+    "LOG_INTERVAL": 1,
+    "LOG_BACKUP_COUNT": 7,
+    "LOG_FORMATTER_FORMAT": "%(asctime)s - %(levelname)-8s - [%(filename)s:%(lineno)d]%(module)s.%(funcName)s - %(message)s"
+}

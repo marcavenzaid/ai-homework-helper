@@ -1,0 +1,18 @@
+IQ scores
+
+Medium Lead level: 72,89,92,85,89,97,83,92,95,111,91
+
+High Lead level: n_2 = 11, \bar{x_2} = 89.912, s_2 = 9.528
+
+Listen in the data table are IQ scores for a random sample of subjects with medium lead levels in their blood. Also listed are statistics from a study done of IQ scores for a random sample of subjects with high lead levels. Assume that the two samples are independent simple random samples selected from normally distributed populations. Do not assume that the population standard deviation are equal.  
+
+a. use a 0.05 significance level to test the claim that the mean IQ scores for subjects with medium lead levels is higher than the mean for subjects with high lead levels.
+
+What are the null and alternative hypotheses? Assume that population 1 consists of subjects with medium lead levels and population 2 consists of  subjects with high lead levels.
+
+H_0: \mu_1 = \mu_2
+H_1: \mu_1 > \mu_2
+
+The test statistic is 0.155. 
+
+What is the confidence interval?

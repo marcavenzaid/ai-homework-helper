@@ -1,0 +1,73 @@
+[process of solving]
+To solve this problem, we will perform a two-sample t-test to compare the means of the two independent groups. Given the significance level \(\alpha = 0.05\), we will construct a confidence interval for the difference in means (\(\mu_1 - \mu_2\)) and determine whether this interval supports the claim.
+
+We are given:
+- IQ scores for medium lead level group: \(72, 89, 92, 85, 89, 97, 83, 92, 95, 111, 91\)
+- For high lead level group: \(n_2 = 11, \bar{x}_2 = 89.912, s_2 = 9.528\)
+
+Steps:
+
+1. Compute the sample mean (\(\bar{x}_1\)) and sample standard deviation (\(s_1\)) for the medium lead level group.
+2. Use the sample sizes, sample means, and sample standard deviations to compute the standard error and the test statistic.
+3. Construct the confidence interval for the difference in means using the formula for the confidence interval for two independent samples.
+
+[equations]
+1. Sample mean (\(\bar{x}_1\)): The average IQ score for subjects with medium lead levels.
+\[
+\bar{x}_1 = \frac{1}{n_1} \sum_{i=1}^{n_1} x_i 
+\]
+Substitute the given values:
+\[
+\bar{x}_1 = \frac{72 + 89 + 92 + 85 + 89 + 97 + 83 + 92 + 95 + 111 + 91}{11} = 90.36
+\]
+
+2. Sample standard deviation (\(s_1\)): The measure of the amount of variation or dispersion of the IQ scores for medium lead levels.
+\[
+s_1 = \sqrt{\frac{1}{n_1 - 1} \sum_{i=1}^{n_1} (x_i - \bar{x}_1)^2}
+\]
+Substitute the given values and \(\bar{x}_1 = 90.36\):
+\[
+s_1 \approx 10.41
+\]
+
+3. Standard Error (SE): The standard error of the difference between two means.
+\[
+SE = \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}
+\]
+Substitute the given and computed values:
+\[
+SE = \sqrt{\frac{10.41^2}{11} + \frac{9.528^2}{11}} \approx 4.31
+\]
+
+4. Confidence Interval (CI): The range within which we can be confident that the true difference between the population means (\(\mu_1 - \mu_2\)) lies, at a certain confidence level.
+\[
+CI = (\bar{x}_1 - \bar{x}_2) \pm t_{\alpha/2, \, df} \times SE
+\]
+Here, the degrees of freedom (df) can be approximated using the formula:
+\[
+df \approx \frac{\left(\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}\right)^2}{\frac{(\frac{s_1^2}{n_1})^2}{n_1 - 1} + \frac{(\frac{s_2^2}{n_2})^2}{n_2 - 1}}
+\]
+Substitute the computed values:
+\[
+df \approx \frac{\left(\frac{10.41^2}{11} + \frac{9.528^2}{11}\right)^2}{\frac{(\frac{10.41^2}{11})^2}{10} + \frac{(\frac{9.528^2}{11})^2}{10}} \approx 19.94 \approx 20
+\]
+
+Using \(t\)-distribution table, find \(t_{\alpha/2, \, df}\) for \(\alpha = 0.05\):
+\[
+t_{0.025, \, 20} \approx 2.086
+\]
+
+5. Constructing the confidence interval (CI):
+\[
+CI = (90.36 - 89.912) \pm 2.086 \times 4.31
+\]
+\[
+CI = 0.448 \pm 8.99
+\]
+\[
+CI = [-8.542, 8.99]
+\]
+
+Therefore, the confidence interval for the difference in means (\(\mu_1 - \mu_2\)) at the 0.05 significance level is approximately \([-8.542, 8.99]\).
+
+This means we are 95% confident that the actual difference in population means falls within this interval.

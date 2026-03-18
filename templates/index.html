@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}Text - {{brain.get_brain_config().get_tutor_brain_full_name()}}{% endblock %}
+{% block additional_head_link_script %}
+  <script type="module" src="{{ url_for('static', filename='js/output_handler.js') }}"></script>
+{% endblock %}
+{% block index_nav_active %}active{% endblock %}
+{% block content %}
+<main class="body-navbar-offset" style="margin-bottom: 100px;">
+  <div class="container-fluid" style="padding-top: 20px;">
+
+    <div class="row mb-4">
+      <div class="col"></div>
+      <div class="col-12 col-lg-8 pt-3 pb-3">
+        
+        <form id="inputForm" action="/" method="post" enctype="multipart/form-data" onsubmit="onSubmitHandler();">
+          <textarea type="text" class="form-control rounded-bottom-0 rounded-top-2 input-text-area" name="inputMessage" id="inputMessage" placeholder="Ask a question"></textarea>
+
+          <!-- <div class="d-flex justify-content-end p-2 border border-top-0 rounded-bottom-2 mb-2"> -->
+          <div class="p-1 border border-top-0 rounded-bottom-2 mb-2 bg-body">
+            <!-- <label class="text-body-secondary mb-2">Images</label> -->
+            <div class="pb-2">  
+              <div class="file-loading">
+                <input id="inputImages" name="inputImages[]" type="file" multiple>
+              </div>
+              <style>
+                .file-preview {
+                  overflow-x: scroll;
+                  border: 0;
+                }
+                .file-preview-thumbnails {
+                  justify-content: start;
+                  flex-direction: row;
+                }
+                .krajee-default.file-preview-frame .kv-file-content {
+                  width: 160px;
+                  height: 130px;
+                }
+                .krajee-default .file-footer-caption {
+                  margin-bottom: 0;
+                }
+                .file-zoom-content {
+                  height: 80vh !important; 
+                }
+                @media (max-width: 767px) {
+                  .kv-zoom-header {
+                    flex-direction: row !important;
+                  }
+                }
+                .kv-zoom-title {
+                  width: 50%;
+                }
+                .kv-zoom-caption {
+                  display: block;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                }
+              </style>
+              <script>
+                $(document).ready(function() {
+                  $("#inputImages").fileinput({
+                    maxFileSize: 20000, // 20MB. OpenAI's vision restricts image uploads to 20MB per image.
+                    maxFileCount: 5,
+                    previewFileType: "image",
+                    allowedFileExtensions: ["jpg", "jpeg", "png", "webp"],
+                    theme: "bs5",
+                    uploadUrl: null,
+                    inputGroupClass: "input-group-sm",
+                    showClose: false,
+                    showUpload: false,
+                    browseOnZoneClick: true,
+                    showCaption: false,
+                    dropZoneEnabled: false,
+                    // dropZoneTitle: "",
+                    // dropZoneClickTitle: "Click to select files",
+                    browseClass: "btn btn-outline-primary border-0",
+                    browseLabel: "",
+                    browseIcon: "<i class=\"bi bi-images fs-3\"></i> ",
+                    removeClass: "btn btn-outline-primary border-0",
+                    removeLabel: "",
+                    removeIcon: "<i class=\"bi bi-trash fs-3\"></i> ",
+                    removeTitle: "Remove all images",
+                    layoutTemplates: {
+                      modal: 
+                        '<div class="modal-dialog modal-lg{rtl}" role="document">\n' +
+                        '  <div class="modal-content">\n' +
+                        '    <div class="modal-header kv-zoom-header">\n' +
+                        '      <h6 class="modal-title kv-zoom-title" id="' + "tModalLabel" + '"><span class="kv-zoom-caption"></span> <span class="kv-zoom-size"></span></h6>\n' +
+                        '      <div class="kv-zoom-actions text-end">{close}</div>\n' +
+                        '    </div>\n' +
+                        '    <div class="floating-buttons"></div>\n' +
+                        '    <div class="kv-zoom-body file-zoom-content {zoomFrameClass}"></div>\n' + '{prev} {next}\n' +
+                        '    <div class="kv-zoom-description"></div>\n' +
+                        '  </div>\n' +
+                        '</div>\n',
+                    },
+                  });
+                });
+              </script>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <div class="align-self-center spinner-border spinner-border-sm text-secondary me-2" role="status" id="loadingStatus" style="visibility: hidden;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <span class="align-self-center text-secondary me-3" id="statusMessage"></span>
+            <input type="submit" class="btn btn-primary" id="submitBtn" value="Submit" />
+          </div>
+        </form>
+      </div>
+      <div class="col"></div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col"></div>
+      <div class="col-12 col-lg-8">
+        <div class="d-grid">
+          <button type="button" class="btn btn-outline-secondary border" data-bs-toggle="collapse" data-bs-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+            Show My Question
+          </button>
+        </div>
+        <div class="collapse" id="collapseLogs">
+          <pre class="border overflow-y-scroll" style="max-height: 400px; text-wrap: wrap;"><p class="text-secondary mb-2   ">(Only the text question is displayed here, the images are not.)</p>
+            {%- if input_message -%}
+              {{ input_message|safe }}
+            {%- endif -%}          
+          </pre>
+        </div>
+      </div>
+      <div class="col"></div>
+    </div>
+  </div>
+  
+  <div>
+    <div class="row g-0 mx-0 mb-5">
+      <div class="col"></div>
+      <div class="col-12 col-lg-8">
+        <div class="bg-body border-top border-bottom py-2 px-3 mb-3">
+          <h5 class="mb-3">Answer</h5>
+          <div id="answerBody" class="card-text"></div>
+          <textarea hidden id="answerBodyHiddenTextArea">
+            {%- if answer -%}
+              {{ answer|safe }}
+            {%- endif -%}
+          </textarea>
+        </div>
+
+        <div class="bg-body border-top border-bottom py-2 px-3">
+          <h5 class="mb-3">Step-by-step solution</h5>
+          <div id="stepByStepSolutionBody" class="card-text"></div>
+          <textarea hidden id="stepByStepSolutionBodyHiddenTextArea">
+            {%- if step_by_step_solution -%}
+              {{ step_by_step_solution|safe }}
+            {%- endif -%}
+          </textarea>
+        </div>
+
+        <br>
+        <br>
+        <br>
+
+        <div class="border-top">
+          <!-- <div class="row">
+            <div class="col"></div>
+            <div class="col-12 col-lg-8">
+              <img src="/static/output/images/file-Q4OA4mj58R6dPKfHGBSofaVq.png" alt="file-0dc7EUYpzUP3gaiIfikcahqP.png" style="max-width: 100%; height: auto;">
+            </div>
+            <div class="col"></div>
+          </div> -->
+          {%- if asdf -%}
+            {{ asdf|safe }}
+          {%- endif -%}
+        </div>
+      </div>
+      <div class="col"></div>
+    </div>
+
+    <!-- This is temporary -->
+    <div class="row mb-5">
+      <div class="col"></div>
+      <div class="col-12 col-lg-8 pb-2 border-top border-bottom">
+        <b>merged_output_chat_completion</b>
+        <br>
+        {%- if merged_output_chat_completion -%}
+          {%- if merged_output_chat_completion.choices[0].message.content -%}
+            {{ merged_output_chat_completion.choices[0].message.content|safe }}
+          {%- endif -%}
+        {%- endif -%}
+        <hr>
+        <b>openai_chat_completion_obj</b>
+        <br>
+        {%- if openai_chat_completion_obj -%}
+          {%- if openai_chat_completion_obj.choices[0].message.content -%}
+            {{ openai_chat_completion_obj.choices[0].message.content|safe }}
+          {%- endif -%}
+        {%- endif -%}
+        <hr>
+        <b>openai_assistant_messages_data_obj</b>
+        {%- if openai_assistant_messages_data_obj -%}
+          {{ openai_assistant_messages_data_obj }}
+        {%- endif -%}
+        <hr>
+        <b>openai_assistant_run_steps_data_obj</b>
+        {%- if openai_assistant_run_steps_data_obj -%}
+          {{ openai_assistant_run_steps_data_obj }}
+        {%- endif -%}
+      </div>
+      <div class="col"></div>
+    </div>
+
+  </div>
+</main>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+{% endblock %}

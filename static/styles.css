@@ -1,0 +1,70 @@
+html, body {
+    min-height: 100vh;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Override Bootstrap class */
+.navbar {
+    height: 56px;
+}
+
+/* Override Bootstrap class */
+.navbar-nav .nav-link.active {
+    font-weight: 600;
+}
+
+.navbar-glassmorphism-light {
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.6);
+    /* box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(8px);
+    /* border: 1px solid rgba(255, 255, 255, 0.3); */
+}
+
+.navbar-glassmorphism-dark {
+    /* From https://css.glass */
+    background: rgba(0, 0, 0, 0.6);
+    /* box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(8px);
+    /* border: 1px solid rgba(255, 255, 255, 0.3); */
+}
+
+.body-navbar-offset {
+    margin-top: 56px; /* navbar height */
+}
+
+.main-container {
+    display: flex;
+    flex: 1 1 0;
+}
+
+/* to offset body from navbar if you are using fixed navbar.
+.navbar-offset {
+    margin-top: 56px; 
+} */
+
+.input-text-area {
+    min-height: 100px !important; 
+}
+
+/* 
+Adjust the look of MathJax maths (inlines and blocks).
+*/
+.MathJax {
+    font-size: 1.0em !important;
+    color: rgb(40, 126, 240);
+    overflow-y: hidden;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+/* 
+Adjust the look of MathJax inline maths.
+*/
+.MathJax:not([display="true"]) {
+    /* display: inline-block; */
+    display: inline-flex;
+    max-width: 100%;
+}
