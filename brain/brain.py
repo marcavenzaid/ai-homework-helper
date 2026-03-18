@@ -1,8 +1,5 @@
 from openai import OpenAI
 from brain.brain_config import BrainConfig
-from brain.tutor_brain_chat_completion import TutorBrainChatCompletion
-from brain.tutor_brain_assistant import BrainAssistant
-from brain.image_brain_chat_completion import ImageBrainChatCompletion
 from brain.tutor_brain_chat_completion_and_assistant import TutorBrainChatCompletionAndAssistant
 import logging
 import os
@@ -25,11 +22,6 @@ class Brain():
 
         # Tutor brain
         self._chat_completion_and_assistant = TutorBrainChatCompletionAndAssistant(self._openai_client, self._brain_config)
-        # self._tutor_brain_chat_completion = TutorBrainChatCompletion(self._openai_client, self._brain_config)
-        # self._tutor_brain_assistant = BrainAssistant(self._openai_client, self._brain_config)
-
-        # Image brain
-        # self._image_brain_chat_completion = ImageBrainChatCompletion(self._openai_client, self._brain_config)
 
 
     def get_openai_client(self):

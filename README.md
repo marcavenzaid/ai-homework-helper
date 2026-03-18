@@ -10,9 +10,6 @@ The current implementation is centered on Statistics and Probability tutoring. I
 
 The app also stores the latest request/response artifacts on disk so the last result remains visible after the page reloads.
 
-![Screenshot](for_README/AI_Homework_Helper_screenshot_1.png)
-![Screenshot](for_README/AI_Homework_Helper_screenshot_2.png)
-![Screenshot](for_README/AI_Homework_Helper_screenshot_3.png)
 ![Screenshot](for_README/AI_Homework_Helper_screenshot_4.png)
 
 ## Features
@@ -52,6 +49,77 @@ At runtime, the application follows this sequence:
 6. The final response is saved to disk and rendered in the browser.
 7. LaTeX, Markdown, and generated image placeholders are converted for display on the frontend.
 
+## Brain Process
+
+The brain is the core processing pipeline. It is composed of three classes that work together: `Brain`, `BrainConfig`, and `TutorBrainChatCompletionAndAssistant`. The entry point is the `think()` method, which drives a three-stage OpenAI workflow.
+
+### Initialization
+
+When the Flask app starts, `Brain` is instantiated. It:
+
+1. Creates an `OpenAI` client using the `OPENAI_API_KEY` environment variable.
+2. Instantiates `BrainConfig`, which reads `config/brain_config.yaml` and selects the active brain profile (e.g. `number_1_type_t`).
+3. Instantiates `TutorBrainChatCompletionAndAssistant`, which reads all model parameters from the loaded config, then immediately retrieves the pre-configured OpenAI Assistant by ID from the API.
+
+### Stage 1 — Chat Completion: process of solving
+
+The first stage reasons about *how* to solve the problem without actually solving it.
+
+- The system message instructs the model to outline the process of solving and list all relevant equations in a structured format: `[image]` (if applicable), `[process of solving]`, and `[equations]`.
+- If the user uploaded images, the request is sent to `gpt-4-vision-preview` via a raw HTTP call with each image embedded as a base64 data URL. The system message is not included in this path; only the user message with the embedded images is sent.
+- If there are no images, the request is sent using the standard chat completions API with the configured model (`gpt-4o`), and the full conversation including the system message is used.
+- The conversation is reset before each new request so prior turns do not bleed through.
+
+### Stage 2 — OpenAI Assistant: full solution
+
+The second stage sends the combined text (original question plus the chat completion output from Stage 1) to a pre-configured OpenAI Assistant.
+
+- A new thread is created for each request.
+- The assistant receives the combined input as a user message and runs against its own system instructions (configured separately in the OpenAI Assistants dashboard).
+- The run is polled every 5 seconds until it reaches a terminal state, with a 600-second timeout.
+- If the assistant output contains generated image files, each image is downloaded by file ID and saved to `static/output/images/`. The image reference in the output is replaced with an `image:[filename.png]` placeholder that the frontend later converts into an `<img>` element.
+
+### Stage 3 — Merger Chat Completion: final formatting
+
+The third stage rewrites and polishes the combined output into the final response format.
+
+- All text collected so far (question, chat completion outline, and all assistant messages) is concatenated and sent to the merger model (`gpt-4o`).
+- The merger system message instructs the model to act as a Statistics and Probability tutor and rewrite everything into two clearly labelled sections: `[Answer]` and `[Step-by-step solution]`.
+- LaTeX formatting guidelines are enforced in the system prompt so that output always uses `\(` / `\)` for inline math and `\[` / `\]` for display math.
+
+### Output
+
+`think()` returns all four artifacts: the raw chat completion object, the assistant messages, the assistant run steps, and the final merged chat completion. The processor saves these to disk and extracts the merged output text for rendering in the browser.
+
+```mermaid
+flowchart TD
+    A([User Input - text and optional images]) --> B{Images present?}
+
+    B -- Yes --> C1["Stage 1: Vision Chat Completion<br/>gpt-4-vision-preview<br/>Images sent as base64 data URLs"]
+    B -- No --> C2["Stage 1: Chat Completion<br/>gpt-4o<br/>Text-only request"]
+
+    C1 --> D["Output: image description,<br/>process of solving, equations"]
+    C2 --> D
+
+    D --> E["Stage 2: OpenAI Assistant<br/>New thread created<br/>Input: question + Stage 1 output"]
+
+    E --> F{"Poll run status<br/>every 5s - max 600s"}
+    F -- queued/in_progress/requires_action/cancelling --> F
+    F -- failed/cancelled/expired --> ERR([Error: run did not complete])
+    F -- completed --> G[Collect assistant messages]
+
+    G --> H{Generated images in output?}
+    H -- Yes --> I["Download images by file ID<br/>Save to static/output/images/<br/>Replace with image placeholder"]
+    H -- No --> J["Stage 3: Merger Chat Completion<br/>gpt-4o<br/>Input: question + Stage 1 + all assistant messages"]
+    I --> J
+
+    J --> K["Output: Answer and Step-by-step solution"]
+
+    K --> L["Save all artifacts to disk<br/>chat_completion, assistant messages,<br/>run steps, merged output"]
+
+    L --> M([Render in browser - Markdown, MathJax, images])
+```
+
 ## Tech Stack
 
 - Python
@@ -63,39 +131,6 @@ At runtime, the application follows this sequence:
 - markdown-it
 - MathJax
 - PyYAML
-
-## Project Structure
-
-```text
-AI Homework Helper/
-|-- main.py                          # Flask entrypoint
-|-- processor.py                     # Request processing and output persistence
-|-- definitions.py                   # Path constants resolved from definitions.json
-|-- definitions.json                 # Root-relative file and folder paths
-|-- requirements.txt                 # Python dependencies
-|-- brain/
-|   |-- brain.py                     # OpenAI client and brain wiring
-|   |-- brain_config.py              # Loads tutor configuration from YAML
-|   |-- tutor_brain_chat_completion_and_assistant.py
-|                                   # Main multi-stage OpenAI workflow
-|-- config/
-|   |-- config.json                  # App and logging settings
-|   |-- brain_config.yaml            # Active tutor/model/assistant configuration
-|-- templates/
-|   |-- base.html                    # Shared layout and CDN dependencies
-|   |-- index.html                   # Main page
-|-- static/
-|   |-- styles.css                   # Frontend styles
-|   |-- js/
-|   |   |-- script.js               # Theme toggle and form behavior
-|   |   |-- output_handler.js       # Markdown, MathJax, and image rendering
-|   |-- input/images/               # Uploaded images
-|   |-- output/images/              # Generated/downloaded images from assistant output
-|   |-- audio/                      # Notification audio assets
-|-- output/                         # Latest saved request/response artifacts
-|-- logger/logger_output/           # Rotating log files
-|-- utilities/                      # Shared helpers and file cleanup logic
-```
 
 ## Requirements
 
@@ -116,7 +151,7 @@ PORT=5000
 
 Notes:
 
-- OPENAI_API_KEY is required. The app reads it during startup.
+- `OPENAI_API_KEY` is required. The app reads it during startup.
 - PORT is optional. If omitted, the app defaults to 5000.
 
 ## Installation
@@ -136,7 +171,7 @@ pip install -r requirements.txt
 
 3. Set up environment variables in .env.
 
-4. Review the tutor configuration in config/brain_config.yaml.
+4. Review the tutor configuration in `config/brain_config.yaml`.
 
 ## Running The App
 
@@ -152,13 +187,13 @@ Then open:
 http://127.0.0.1:5000
 ```
 
-If PORT is set, use that port instead.
+If PORT is set in .env, use that port instead.
 
 ## Configuration
 
 ### 1. General app config
 
-config/config.json controls:
+`config/config.json` controls:
 
 - file cleanup limits
 - log rotation schedule
@@ -172,7 +207,7 @@ Current cleanup behavior:
 
 ### 2. Tutor brain config
 
-config/brain_config.yaml controls:
+`config/brain_config.yaml` controls:
 
 - which tutor brain is active
 - the chat completion model
@@ -228,7 +263,7 @@ logger/logger_output/app.log
 Logging behavior:
 
 - rotating file handler
-- rotation interval configured in config/config.json
+- rotation interval configured in `config/config.json`
 - console logging enabled alongside file logging
 - archived logs keep the .log suffix for editor syntax highlighting
 
@@ -264,14 +299,14 @@ Important client-side behavior:
 
 If startup or requests fail because authentication is missing:
 
-- confirm OPENAI_API_KEY is set
+- confirm `OPENAI_API_KEY` is set
 - confirm load_dotenv can find the .env file in the project root
 
 ### Assistant retrieval failures
 
 If the app fails while loading the assistant:
 
-- verify the assistant ID in config/brain_config.yaml
+- verify the assistant ID in `config/brain_config.yaml`
 - verify the API key has access to that assistant
 - verify the assistant still exists in your OpenAI account
 
